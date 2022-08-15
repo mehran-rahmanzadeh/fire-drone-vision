@@ -1,0 +1,1 @@
+sudo ./flirone palettes/Iron2.raw

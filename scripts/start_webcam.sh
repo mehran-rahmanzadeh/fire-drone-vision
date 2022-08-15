@@ -1,36 +1,3 @@
-# Fire Drone Vision Setup
-
-### Setup HD & thermal cameras on raspberry pi
-
-### Requirements
-
-clone `v412loopback` repository
-```shell
-git clone https://github.com/umlaeute/v4l2loopback.git
-```
-build `v4l2loopback`
-```shell
-cd v4l2loopback
-make
-```
-NOTE: if error occurs, try to run `sudo make install`
-```shell
-git clone https://github.com/fnoop/flirone-v4l2.git
-```
-build `flirone-v4l2`
-```shell
-cd flirone-v4l2
-make
-```
-Now you can use implemented scripts to run cameras
-```shell
-sudo modprobe v4l2loopback devices=5
-```
-```shell
-# in flirone-v4l2/
-sudo ./flirone palettes/Iron2.raw
-```
-```shell
 #!/bin/bash
 
 START_PATH="/gp/gpWebcam/START?res="
@@ -76,12 +43,3 @@ if [[ -z "${response}" ]]; then
 fi
 
 echo "Successfully started the GoPro Webcam mode. (The icon on the Camera should have changed)"
-
-```
-or simply run
-```shell
-sudo bash ./scripts/start_webcam.sh
-```
-Now you can access cameras throw these ways:
-- HD: `udp://@:8554`
-- Thermal: `/dev/video3`
