@@ -85,3 +85,8 @@ sudo bash ./scripts/start_webcam.sh
 Now you can access cameras throw these ways:
 - HD: `udp://@:8554`
 - Thermal: `/dev/video3`
+
+Or you can use the given script:
+```shell
+bash ./scripts/show_all_cams.sh
+```
