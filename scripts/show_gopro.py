@@ -2,12 +2,10 @@
 To get the proper window size and position, fix windows in the pos and then run this command on terminal:
 $ xwininfo
 """
-import time
 
 import cv2
-from imutils.video import FPS
-from imutils.video import WebcamVideoStream
-import imutils
+from threading import Thread
+
 
 GOPRO_VIDEO_SOURCE = "udp://@:8554?overrun_nonfatal=1&fifo_size=50000000"
 FLIR_VIDEO_SOURCE = "/dev/video3"
@@ -19,16 +17,39 @@ WIN_X = 311
 WIN_Y = 34
 
 
-cap = WebcamVideoStream(src=GOPRO_VIDEO_SOURCE).start()
-time.sleep(1.0)
-fps = FPS().start()
-# cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+class ThreadedCamera(object):
+    def __init__(self, source=0):
+
+        self.capture = cv2.VideoCapture(source)
+
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
+
+        self.status = False
+        self.frame = None
+
+    def update(self):
+        while True:
+            if self.capture.isOpened():
+                (self.status, self.frame) = self.capture.read()
+
+    def grab_frame(self):
+        if self.status:
+            return self.frame
+        return None
+
+
+streamer = ThreadedCamera(GOPRO_VIDEO_SOURCE)
 cv2.namedWindow(WIN_NAME, cv2.WINDOW_NORMAL)
 cv2.resizeWindow(WIN_NAME, WIN_WIDTH, WIN_HEIGHT)
 cv2.moveWindow(WIN_NAME, WIN_X, WIN_Y)
 
 while True:
-    frame = cap.read()
+    frame = streamer.grab_frame()
+
+    if frame is None:
+        continue
 
     # get the webcam size
     height, width, channels = frame.shape
@@ -46,7 +67,6 @@ while True:
     cv2.imshow(WIN_NAME, resized_cropped)
 
     key = cv2.waitKey(1)
-    fps.update()
 
     if key == ord('q'):
         if ZOOM_RATIO < 50:
@@ -57,5 +77,4 @@ while True:
             ZOOM_RATIO -= 0.5
 
 # When everything is done, release the capture
-cap.release()
 cv2.destroyAllWindows()
