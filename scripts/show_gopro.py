@@ -7,8 +7,9 @@ import time
 import cv2
 from imutils.video import FPS
 from imutils.video import WebcamVideoStream
+import imutils
 
-GOPRO_VIDEO_SOURCE = "udp://@:8554"
+GOPRO_VIDEO_SOURCE = "udp://@:8554?overrun_nonfatal=1&fifo_size=50000000"
 FLIR_VIDEO_SOURCE = "/dev/video3"
 ZOOM_RATIO = 50
 WIN_NAME = 'GoPro'
