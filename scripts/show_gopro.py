@@ -6,6 +6,8 @@ $ xwininfo
 import cv2
 from threading import Thread
 
+from mq import MQ
+
 LOGITEC_SOURCE = 0
 GOPRO_VIDEO_SOURCE = "udp://@:8554?overrun_nonfatal=1&fifo_size=50000000"
 FLIR_VIDEO_SOURCE = "/dev/video3"
@@ -45,6 +47,13 @@ cv2.namedWindow(WIN_NAME, cv2.WINDOW_NORMAL)
 cv2.resizeWindow(WIN_NAME, WIN_WIDTH, WIN_HEIGHT)
 cv2.moveWindow(WIN_NAME, WIN_X, WIN_Y)
 
+# initialize sensors
+# TODO: define sensors here
+# mq_2 = MQ(4, "Methane, Butane, LPG, Smoke")
+# mq_7 = MQ(13, "Carbon Monoxide")
+# sensor_objs = [mq_2, mq_7]
+sensor_objs = []
+
 while True:
     frame = streamer.grab_frame()
 
@@ -63,6 +72,28 @@ while True:
 
     cropped = frame[minX:maxX, minY:maxY]
     resized_cropped = cv2.resize(cropped, (width, height))
+
+    for i, sensor in enumerate(sensor_objs):
+        if sensor.is_detected():
+            cv2.putText(
+                img=resized_cropped,
+                text=f"{sensor.display_title}: detected",
+                org=(35, 35+(i*40)),
+                fontFace=cv2.FONT_ITALIC,
+                fontScale=0.75,
+                color=(0, 0, 255),
+                thickness=2
+            )
+        else:
+            cv2.putText(
+                img=resized_cropped,
+                text=f"{sensor.display_title}: not detected",
+                org=(35, 35+(i*40)),
+                fontFace=cv2.FONT_ITALIC,
+                fontScale=0.75,
+                color=(0, 255, 0),
+                thickness=2
+            )
 
     cv2.imshow(WIN_NAME, resized_cropped)
 
