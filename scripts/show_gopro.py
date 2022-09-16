@@ -6,7 +6,7 @@ $ xwininfo
 import cv2
 from threading import Thread
 
-
+LOGITEC_SOURCE = 0
 GOPRO_VIDEO_SOURCE = "udp://@:8554?overrun_nonfatal=1&fifo_size=50000000"
 FLIR_VIDEO_SOURCE = "/dev/video3"
 ZOOM_RATIO = 50
@@ -40,7 +40,7 @@ class ThreadedCamera(object):
         return None
 
 
-streamer = ThreadedCamera(GOPRO_VIDEO_SOURCE)
+streamer = ThreadedCamera(LOGITEC_SOURCE)
 cv2.namedWindow(WIN_NAME, cv2.WINDOW_NORMAL)
 cv2.resizeWindow(WIN_NAME, WIN_WIDTH, WIN_HEIGHT)
 cv2.moveWindow(WIN_NAME, WIN_X, WIN_Y)
